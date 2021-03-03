@@ -1,0 +1,42 @@
+package jd.extentreports;
+
+import org.testng.ITestListener;
+
+import com.relevantcodes.extentreports.ExtentReports;
+
+public class Listener implements ITestListener {
+	ExtentReports extent = ExtentReportBase.ExtentReportGenerator();
+	ExtentTest test;
+	//This is the concept of ThreadSafe
+	// make it private static, so no other class will have access and when you are dealing with ThreadSafe, its good to have private
+	private static ThreadLocal<ExtentTest> extentTest = new ThreadLocal<ExtentTest>();
+
+	public void onFinish(ITestContext context) {
+		extent.flush();
+	}
+
+	public void onStart(ITestContext context) {
+
+	}
+
+	public void onTestFailure(ITestResult result) {
+		extentTest.get().fail(result.getThrowable());
+		
+	}
+
+	public void onTestSkipped(ITestResult result) {
+
+	}
+
+	public void onTestStart(ITestResult result) {
+		test = extent.createTest(result.getMethod().getMethodName());
+		extentTest.set(test);
+	}
+
+	public void onTestSuccess(ITestResult result) {
+		extentTest.get().log(Status.PASS, "Test Successful");
+	}
+
+	
+}
+
